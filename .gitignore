@@ -3,3 +3,5 @@ build/
 *.log
 *.ts
 *.m3u8
+*.dot
+*.png
