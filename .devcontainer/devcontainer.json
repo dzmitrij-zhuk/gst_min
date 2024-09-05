@@ -1,0 +1,53 @@
+{
+    "name": "rixjob",
+    "image": "dev_env",
+    "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+    "workspaceFolder": "${localWorkspaceFolder}",
+    "mounts": [
+        "source=/etc/rixjob_slave.conf,target=/etc/rixjob_slave.conf,type=bind",
+        "source=/var/setrix/,target=/var/setrix/,type=bind",
+        "source=/dev/dri/,target=/dev/dri/,type=bind",
+        "source=/etc/localtime,target=/etc/localtime,type=bind",
+        "source=/etc/timezone,target=/etc/timezone,type=bind"
+        // "source=/home/b1446/dump/pcap/,target=/etc/dump/pcap,type=bind"
+    ],
+    "containerEnv": {
+        "DISPLAY": "${localEnv:DISPLAY}",
+        "XDG_RUNTIME_DIR": "${localEnv:XDG_RUNTIME_DIR}"
+        //"NVIDIA_VISIBLE_DEVICES": "all",
+        //"NVIDIA_DRIVER_CAPABILITIES": "video,compute,utility"
+    },
+    "runArgs": [
+      "--device=/dev/dri",
+      "--network=host",
+      "--cap-add=SYS_PTRACE",
+      "--security-opt",
+      "seccomp=unconfined"    
+    ],
+    "postCreateCommand": [
+    ],
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "bash"
+                    }
+                },
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+                "ms-vscode.cpptools",
+                "twxs.cmake",
+                "go2sh.cmake-integration-vscode",
+                "ms-vscode.cmake-tools",
+                "ms-azuretools.vscode-docker",
+                "eamodio.gitlens",
+                "ms-vscode.cmake-tools",
+                "mhutchie.git-graph",
+                "k--kato.intellij-idea-keybindings",
+                "llvm-vs-code-extensions.vscode-clangd"
+            ]
+        }
+    }
+}

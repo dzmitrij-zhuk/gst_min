@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/gst_min",
+            "MIMode": "gdb",
+            "stopAtEntry": false,
+            "environment": [{ "name": "GST_DEBUG", "value": "3" },
+            {"name": "GST_DEBUG_FILE", "value": "trenches.log"},
+            {"name": "GST_PLUGIN_FEATURE_RANK", "value": "mfxh264dec:0"},
+            {"name": "GST_DEBUG_DUMP_DOT_DIR", "value": "/home/b964/work/gst_min"}
+        ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
