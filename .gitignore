@@ -1,0 +1,5 @@
+build/
+.cache/
+*.log
+*.ts
+*.m3u8
