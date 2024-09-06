@@ -1,4 +1,5 @@
 #include <boost/asio.hpp>
+#include <boost/asio/detail/chrono.hpp>
 #include <boost/asio/placeholders.hpp>
 #include <glib-object.h>
 #include <glib.h>
@@ -12,11 +13,15 @@
 #include <gstreamer-1.0/gst/gstelement.h>
 #include <gstreamer-1.0/gst/gstpad.h>
 #include <thread>
+#include <filesystem>
 
 #include "log.h"
+#include "utils.h"
 GstElement *pipeline;
 
 std::atomic<bool> stop_dumping = false;
+static const std::string kFolderGenericName = "generic/";
+static const std::string kFolderPipelineDumpsName = "pipeline_damps/";
 
 static gboolean bus_call(GstBus *bus, GstMessage *msg, gpointer data) {
   GMainLoop *loop = (GMainLoop *)data;
@@ -60,10 +65,10 @@ static gboolean bus_call(GstBus *bus, GstMessage *msg, gpointer data) {
 
 void dump(const boost::system::error_code &, boost::asio::steady_timer *t) {
   if (!stop_dumping) {
-    LOG_INFO("Dumping pipeline");
+    // LOG_INFO("Dumping pipeline");
     gst_debug_bin_to_dot_file(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_ALL,
-                              "test");
-    t->expires_at(t->expiry() + boost::asio::chrono::seconds(5));
+                              (kFolderGenericName + kFolderPipelineDumpsName + getTimestamp()).c_str());
+    t->expires_at(t->expiry() + boost::asio::chrono::milliseconds(50));
     t->async_wait(std::bind(dump, std::placeholders::_1, t));
   } else {
     LOG_INFO("Exiting the timer");
@@ -73,7 +78,7 @@ void dump(const boost::system::error_code &, boost::asio::steady_timer *t) {
 void dumper_timer() {
   LOG_INFO("Starting the dumper");
   boost::asio::io_context io;
-  boost::asio::steady_timer t(io, std::chrono::seconds(5));
+  boost::asio::steady_timer t(io, std::chrono::milliseconds(50));
   t.async_wait(std::bind(dump, std::placeholders::_1, &t));
   io.run();
 }
@@ -100,7 +105,9 @@ GstElement* createAndAddItem(const gchar* plugin, const gchar* name){
 /*******************************************************************/
 
 int main(int argc, char *argv[]) {
-  Logger::getInstance().setLogFile("logfile.log");
+  std::filesystem::create_directory(kFolderGenericName);
+  std::filesystem::create_directory(kFolderGenericName + kFolderPipelineDumpsName);
+  Logger::getInstance().setLogFile(kFolderGenericName + "logfile.log");
   GMainLoop *loop;
   GstBus *bus;
   guint bus_watch_id;
