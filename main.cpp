@@ -38,7 +38,7 @@ static gboolean bus_call(GstBus *bus, GstMessage *msg, gpointer data) {
     g_error_free(error);
     g_free(debug);
 
-    g_main_loop_quit(loop);
+    // g_main_loop_quit(loop);
     break;
   }
   case GST_MESSAGE_STATE_CHANGED: {
