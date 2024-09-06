@@ -15,6 +15,7 @@
 
 enum class LogLevel {
     INFO,
+    WARNING,
     ERROR
 };
 
@@ -115,6 +116,7 @@ private:
     std::string logLevelToString(LogLevel level) {
         switch (level) {
             case LogLevel::INFO: return "INFO";
+            case LogLevel::WARNING: return "WARNING";
             case LogLevel::ERROR: return "ERROR";
             default: return "UNKNOWN";
         }
@@ -128,4 +130,5 @@ private:
 
 // Macros to simplify logging usage
 #define LOG_INFO(msg) Logger::getInstance().log(LogLevel::INFO, __FUNCTION__, __LINE__, msg)
+#define LOG_WARNING(msg) Logger::getInstance().log(LogLevel::WARNING, __FUNCTION__, __LINE__, msg)
 #define LOG_ERROR(msg) Logger::getInstance().log(LogLevel::ERROR, __FUNCTION__, __LINE__, msg)
