@@ -18,7 +18,10 @@ pkg_search_module(glib REQUIRED IMPORTED_TARGET glib-2.0>=0.0)
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-add_executable(${CMAKE_PROJECT_NAME} main.cpp)
+set(SOURCES main.cpp
+            utils.cpp)
+
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} Boost::system)
 
