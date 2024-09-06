@@ -1,5 +1,6 @@
 build/
 .cache/
+generic/
 *.log
 *.ts
 *.m3u8
