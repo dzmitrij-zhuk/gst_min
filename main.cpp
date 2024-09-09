@@ -127,6 +127,8 @@ int main(int argc, char *argv[]) {
   auto decodebin = createAndAddItem("decodebin", "decodebin");
   ////// VIDEO
   auto queue_video_decodebin = createAndAddItem("queue", "queue_video_decodebin");
+  auto videotestsrc = createAndAddItem("videotestsrc", "videotestsrc");
+  auto fallbackswitch_video = createAndAddItem("fallbackswitch", "fallbackswitch_video");
   auto video_convert = createAndAddItem("videoconvert", "video_convert");
   auto queue_video_encoder = createAndAddItem("queue2", "queue_video_encoder");
   auto x264enc = createAndAddItem("x264enc", "x264enc");
@@ -135,6 +137,8 @@ int main(int argc, char *argv[]) {
   //////////////////
   ////// AUDIO
   auto queue_audio_decodebin = createAndAddItem("queue", "queue_audio_decodebin");
+  auto audiotestsrc = createAndAddItem("audiotestsrc", "audiotestsrc");
+  auto fallbackswitch_audio = createAndAddItem("fallbackswitch", "fallbackswitch_audio");
   auto audio_convert = createAndAddItem("audioconvert", "audio_convert");
   auto audio_resample = createAndAddItem("audioresample", "audio_resample");
   auto faac = createAndAddItem("faac", "faac");
@@ -155,7 +159,8 @@ int main(int argc, char *argv[]) {
   g_object_set(source, "location", "http://10.10.20.215:8080/hls/encoding/754/1510/playlist.m3u8", NULL);
   g_signal_connect(decodebin, "pad-added", G_CALLBACK(onPadAdded), queue_video_decodebin);
   g_signal_connect(decodebin, "pad-added", G_CALLBACK(onPadAdded), queue_audio_decodebin);
-  g_object_set(hlssink, "target-duration", 5, NULL);
+  g_object_set(fallbackswitch_video, "timeout", 10000000000, NULL);
+  g_object_set(fallbackswitch_audio, "timeout", 10000000000, NULL);
   //////////////////
 
 
@@ -165,12 +170,20 @@ int main(int argc, char *argv[]) {
       LOG_ERROR("Items <source, queue_src, decodebin> can't be linked!");
       return -1;
   }
-  if(!gst_element_link_many(queue_video_decodebin, video_convert, queue_video_encoder, x264enc, h264parse, queue_video_output, NULL)){
+  if(!gst_element_link_many(queue_video_decodebin, fallbackswitch_video, video_convert, queue_video_encoder, x264enc, h264parse, queue_video_output, NULL)){
       LOG_ERROR("Items <queue_video_decodebin, video_convert, queue_video_encoder, x264enc, h264parse, queue_video_output> can't be linked!");
       return -1;
   }
-  if(!gst_element_link_many(queue_audio_decodebin, audio_convert, audio_resample, faac, aacparse, queue_audio_output, NULL)){
+  if(!gst_element_link(videotestsrc, fallbackswitch_video)){
+      LOG_ERROR("Items <source, queue_src, decodebin> can't be linked!");
+      return -1;
+  }
+  if(!gst_element_link_many(queue_audio_decodebin, fallbackswitch_audio, audio_convert, audio_resample, faac, aacparse, queue_audio_output, NULL)){
       LOG_ERROR("Items <queue_audio_decodebin, audio_convert, audio_resample, faac, aacparse, queue_audio_output> can't be linked!");
+      return -1;
+  }
+    if(!gst_element_link(audiotestsrc, fallbackswitch_audio)){
+      LOG_ERROR("Items <source, queue_src, decodebin> can't be linked!");
       return -1;
   }
   if(!gst_element_link(queue_video_output, mpegtsmux)){
