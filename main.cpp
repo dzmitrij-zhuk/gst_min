@@ -1,6 +1,8 @@
 #include <boost/asio.hpp>
 #include <boost/asio/detail/chrono.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <cstdlib>
+#include <format>
 #include <glib-object.h>
 #include <glib.h>
 #include <gst/gst.h>
@@ -150,7 +152,7 @@ int main(int argc, char *argv[]) {
   bus_watch_id = gst_bus_add_watch(bus, bus_call, loop);
   gst_object_unref(bus);
   
-  g_object_set(source, "location", "http://127.0.0.1:8080/hls/encoding/20/22/playlist.m3u8", NULL);
+  g_object_set(source, "location", "http://10.10.20.215:8080/hls/encoding/754/1510/playlist.m3u8", NULL);
   g_signal_connect(decodebin, "pad-added", G_CALLBACK(onPadAdded), queue_video_decodebin);
   g_signal_connect(decodebin, "pad-added", G_CALLBACK(onPadAdded), queue_audio_decodebin);
   g_object_set(hlssink, "target-duration", 5, NULL);
